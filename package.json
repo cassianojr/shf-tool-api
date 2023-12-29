@@ -13,8 +13,10 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "@types/node-schedule": "^2.1.5",
     "dotenv": "^16.3.1",
-    "express": "^4.18.2"
+    "express": "^4.18.2",
+    "node-schedule": "^2.1.1"
   },
   "devDependencies": {
     "@flydotio/dockerfile": "^0.5.0",
