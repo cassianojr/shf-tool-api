@@ -46,7 +46,7 @@ delphiRound.post('/schedule-end', (req, res) => {
   }.bind(null, msgScheduled));
 
 
-  res.status(200).send('ok');
+  res.status(200).json('ok');
 });
 
 
