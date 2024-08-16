@@ -47,14 +47,6 @@ api.post('/schedule-end', (req, res) => {
     }
   });
 
-  const msg = {
-    email: to,
-    message,
-  }
-
-  console.log(`[server] sent email to ${msg.email} with content: ${msg.message} at ${new Date().toTimeString()}`);
-  EmailService.sendEmail(msg);
-
   res.status(200).json('ok');
 });
 
