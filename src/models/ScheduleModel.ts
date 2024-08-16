@@ -50,8 +50,8 @@ export default class ScheduleModel {
   static async create(schedule: Schedule): Promise<number | boolean> {
     try {
       const result:RunResult = await ScheduleModel.runQuery(
-        `INSERT INTO schedules (email, message, endAt) VALUES (?, ?, ?)`,
-        [schedule.email, schedule.message, schedule.endAt]
+        `INSERT INTO schedules (email, message, endAt, ecosProjectId) VALUES (?, ?, ?, ?)`,
+        [schedule.email, schedule.message, schedule.endAt, schedule.ecosProjectId]
       );
       return result.lastID;
     } catch (e) {

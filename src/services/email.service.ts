@@ -2,7 +2,7 @@ import sgMail from '@sendgrid/mail';
 import dotenv from 'dotenv';
 
 dotenv.config();
-if(process.env.NODE_ENV === 'development') dotenv.config({ path: `.env.local`, override: true });
+if(process.env.NODE_ENV !== 'production')dotenv.config({ path: `.env.local`, override: true });
 
 const API_KEY = process.env.SENDGRID_API_KEY || '';
 const SENDER = process.env.SENDGRID_SENDER_EMAIL || '';

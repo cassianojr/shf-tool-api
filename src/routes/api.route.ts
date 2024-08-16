@@ -3,6 +3,7 @@ import * as schedule from 'node-schedule';
 
 import { EmailService, EmailTemplate } from '../services/email.service';
 import ScheduleModel from '../models/ScheduleModel';
+import EcosProjectModel from '../models/EcosProjectModel';
 
 const api = express.Router();
 api.post('/notify-start', async (req, res) => {
@@ -24,9 +25,17 @@ api.post('/notify-start', async (req, res) => {
   res.status(200).json({ to, message });
 });
 
-
+/**
+ * @Route POST /api/schedule-end
+ * @Description Schedule an email to be sent at a specific time
+ * @Params {string} endAt - The time to send the email
+ * @Params {string} message - The message to send
+ * @Params {string} to - The email to send to
+ * @Params {string} ecosProjectId - The ecos project id
+ * @Response {string} - 'ok'
+ */
 api.post('/schedule-end', (req, res) => {
-  const { endAt, message, to } = req.body;
+  const { endAt, message, to, ecosProjectId } = req.body;
 
   if (!to || !message || !endAt) {
     res.status(422).send('Not Acceptable');
@@ -38,6 +47,7 @@ api.post('/schedule-end', (req, res) => {
     email: to,
     message,
     endAt: dateEnd.getTime().toString(),
+    ecosProjectId
   }
 
   ScheduleModel.create(schedule).then((id) => {
@@ -45,26 +55,38 @@ api.post('/schedule-end', (req, res) => {
       console.log(`[server] scheduled email to ${to} with content: ${message} at ${dateEnd.toTimeString()}`);
       schedule.endAt = dateEnd.toISOString();
     }
-  });
-
+  }).catch(err=>console.log(err));
+  
   res.status(200).json('ok');
 });
 
+/**
+ * @Route GET /api/check-schedules
+ * @Description Check all schedules and send emails if the time has passed, also remove the schedule and update the ecos project status to finished
+ */
 api.get('/check-schedules', async (req, res) => {
   const schedules = await ScheduleModel.getAll();
 
-  schedules.forEach((schedule) => {
+  schedules.forEach(async (schedule) => {
     const dateEnd = new Date(parseInt(schedule.endAt));
     const now = new Date();
 
-    if (dateEnd < now) {
-      console.log(`[server] sent email to ${schedule.email} with content: ${schedule.message} at ${now.toTimeString()}`);
-      EmailService.sendEmail({
-        email: schedule.email,
-        message: schedule.message,
-      });
+    try {
 
-      ScheduleModel.remove(schedule.id as number);
+      await EcosProjectModel.updateEcosProjectStatus(schedule.ecosProjectId);
+
+      if (dateEnd < now) {
+        console.log(`[server] sent email to ${schedule.email} with content: ${schedule.message} at ${now.toTimeString()}`);
+        EmailService.sendEmail({
+          email: schedule.email,
+          message: schedule.message,
+        });
+
+        ScheduleModel.remove(schedule.id as number);
+      }
+
+    } catch (e) {
+      console.error(e);
     }
   });
 
