@@ -55,9 +55,38 @@ api.post('/schedule-end', (req, res) => {
       console.log(`[server] scheduled email to ${to} with content: ${message} at ${dateEnd.toTimeString()}`);
       schedule.endAt = dateEnd.toISOString();
     }
-  }).catch(err=>console.log(err));
-  
+  }).catch(err => console.log(err));
+
   res.status(200).json('ok');
+});
+
+/**
+ * @Route DELETE /api/cancel-schedule/:ecosId
+ * @Description Cancel a scheduled email
+ * @Params {string} ecosId - The ecos project id
+ */
+api.delete('/cancel-schedule/:ecosId', (req, res) => {
+  const { ecosId } = req.params;
+
+  if (!ecosId) {
+    res.status(422).send('Not Acceptable');
+  }
+
+  const schedules = ScheduleModel.getAll().then((schedules) => {
+    schedules.forEach(async (schedule) => {
+      if (schedule.ecosProjectId === ecosId) {
+        console.log(`[server] removed schedule with id: ${schedule.id}`);
+        await ScheduleModel.remove(schedule.id as number);
+
+        res.status(200).json('ok');
+
+      }
+    });
+  }).catch(err => {
+    console.log(err);
+    res.status(500).send('Internal Server Error');
+  });
+
 });
 
 /**
