@@ -102,10 +102,12 @@ api.get('/check-schedules', async (req, res) => {
 
     try {
 
-      await EcosProjectModel.updateEcosProjectStatus(schedule.ecosProjectId);
-
+      
       if (dateEnd < now) {
         console.log(`[server] sent email to ${schedule.email} with content: ${schedule.message} at ${now.toTimeString()}`);
+
+        await EcosProjectModel.updateEcosProjectStatus(schedule.ecosProjectId);
+        
         EmailService.sendEmail({
           email: schedule.email,
           message: schedule.message,
