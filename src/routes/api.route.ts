@@ -104,6 +104,7 @@ api.get('/check-schedules', async (req, res) => {
 
       
       if (dateEnd < now) {
+        console.log(`[server] Search ended at ${dateEnd.toTimeString()} and now is ${now.toTimeString()}`);
         console.log(`[server] sent email to ${schedule.email} with content: ${schedule.message} at ${now.toTimeString()}`);
 
         await EcosProjectModel.updateEcosProjectStatus(schedule.ecosProjectId);
