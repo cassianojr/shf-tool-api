@@ -50,6 +50,9 @@ api.post('/schedule-end', (req, res) => {
     ecosProjectId
   }
 
+  console.log(new Date(parseInt(schedule.endAt)));
+  
+
   ScheduleModel.create(schedule).then((id) => {
     if (id) {
       console.log(`[server] scheduled email to ${to} with content: ${message} at ${dateEnd.toTimeString()}`);
@@ -104,7 +107,7 @@ api.get('/check-schedules', async (req, res) => {
 
       
       if (dateEnd < now) {
-        console.log(`[server] Search ended at ${dateEnd.toTimeString()} and now is ${now.toTimeString()}`);
+        console.log(`[server] Search ended at ${dateEnd.toDateString()} and now is ${now.toDateString()}`);
         console.log(`[server] sent email to ${schedule.email} with content: ${schedule.message} at ${now.toTimeString()}`);
 
         await EcosProjectModel.updateEcosProjectStatus(schedule.ecosProjectId);
