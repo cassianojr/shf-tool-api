@@ -50,7 +50,7 @@ api.post('/schedule-end', (req, res) => {
     ecosProjectId
   }
 
-  console.log(new Date(parseInt(schedule.endAt)));
+  console.log(endAt);
   
 
   ScheduleModel.create(schedule).then((id) => {
