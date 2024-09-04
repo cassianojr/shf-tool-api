@@ -50,9 +50,6 @@ api.post('/schedule-end', (req, res) => {
     ecosProjectId
   }
 
-  console.log(endAt);
-  
-
   ScheduleModel.create(schedule).then((id) => {
     if (id) {
       console.log(`[server] scheduled email to ${to} with content: ${message} at ${dateEnd.toTimeString()}`);
